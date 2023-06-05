@@ -3,8 +3,7 @@
 Labzle is a Balochi version of the popular word game Wordle. It is built using ReactJS and Tailwind CSS to provide an interactive and engaging gameplay experience. Players can test their word-guessing skills while enjoying the Balochi language.
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/190828f4-aeba-47f1-97eb-9827314eb686/deploy-status)](https://app.netlify.com/sites/labzle/deploys)
-![Contributors](https://img.shields.io/github/contributors/umairayub79/Labzle?color=dark-green) ![Issues](https://img.shields.io/github/issues/umairayub79/Labzle) ![License](https://img.shields.io/github/license/umairayub79/Labzle) 
-## Demo
+![Contributors](https://img.shields.io/github/contributors/umairayub79/Labzle?color=dark-green) ![Issues](https://img.shields.io/github/issues/umairayub79/Labzle) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 You can try out the Labzle application live at [Labzle Demo](https://labzle.netlify.app).
 
