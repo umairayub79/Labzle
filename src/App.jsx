@@ -19,6 +19,8 @@ import { words } from './constants/dictionary'
 import ToastContainer from './components/Toast/ToastContainer'
 import { useToast } from './hooks/useToast'
 import { InfoModal } from './components/Modals/InfoModal'
+import { StatsModal } from './components/Modals/StatsModal'
+import { loadStats } from './utils/stats'
 
 
 function App() {
@@ -74,6 +76,7 @@ function App() {
     return loaded.guesses
   })
 
+  const [stats, setStats] = useState(() => loadStats())
 
   useEffect(() => {
     if (isDarkMode) {
@@ -253,6 +256,19 @@ function App() {
       <InfoModal
         isOpen={isInfoModalOpen}
         handleClose={() => setIsInfoModalOpen(false)} />
+
+      <StatsModal
+        isOpen={isStatsModalOpen}
+        stats={stats}
+        isGameLost={isGameLost}
+        isGameWon={isGameWon}
+        isHardMode={isHardMode}
+        solutionIndex={solutionIndex}
+        tomorrow={tomorrow}
+        guesses={guesses}
+        handleShareToClipboard={() => showToast('success', strings.alertMessages.gameCopiedMessage)}
+        handleClose={() => setIsStatsModalOpen(false)} />
+
     </div>
   )
 }
