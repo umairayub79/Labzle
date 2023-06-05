@@ -20,7 +20,7 @@ import ToastContainer from './components/Toast/ToastContainer'
 import { useToast } from './hooks/useToast'
 import { InfoModal } from './components/Modals/InfoModal'
 import { StatsModal } from './components/Modals/StatsModal'
-import { loadStats } from './utils/stats'
+import { loadStats, addStatsForCompletedGame } from './utils/stats'
 import { SettingsModal } from './components/Modals/SettingsModal'
 
 
@@ -97,7 +97,29 @@ function App() {
     }
   }, [])
 
-  
+  useEffect(() => {
+    saveGameStateToLocalStorage({ guesses, letterStatuses, solution })
+    if (guesses.length === MAX_CHALLENGES && !isGameWon) {
+      setStats(addStatsForCompletedGame(stats, guesses.length))
+      setIsGameLost(true)
+    }
+  }, [guesses])
+
+  useEffect(() => {
+    if (isGameWon) {
+      setTimeout(() => {
+        setIsStatsModalOpen(true)
+      }, GAME_LOST_INFO_DELAY);
+      return showToast('success', strings.alertMessages.winMessages[guesses.length < 4 ? [0] : [1]], REVEAL_TIME_MS * MAX_WORD_LENGTH)
+    }
+    if (isGameLost) {
+      setTimeout(() => {
+        setIsStatsModalOpen(true)
+      }, GAME_LOST_INFO_DELAY);
+      return showToast('error', solution, REVEAL_TIME_MS * MAX_WORD_LENGTH + 1, true)
+    }
+  }, [isGameWon, isGameLost])
+
   const handleDarkMode = (isDarkMode) => {
     setIsDarkMode(isDarkMode)
     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light')
@@ -185,7 +207,8 @@ function App() {
         return
       } else if (currentGuess === solution) {
         updateLetterStatuses(currentGuess)
-        setStats(addStatsForCompletedGame(stats, guesses.length))
+        console.log(guesses.length, guesses.length)
+        setStats(addStatsForCompletedGame(stats, guesses.length + 1))
         setAllowInteraction(false)
         setIsRevealing(true)
         setTimeout(() => {

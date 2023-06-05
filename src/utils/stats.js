@@ -4,9 +4,11 @@ import { saveStatsToLocalStorage, loadGameStatsFromLocalStorage } from "./localS
 export const addStatsForCompletedGame = (gameStats, count) => {
     const stats = { ...gameStats }
 
-    stats.totalGames += 1
     console.log(count)
-    if (count >= 5) {
+
+    stats.totalGames += 1
+    if (count >= MAX_CHALLENGES) {
+        // Game Lost
         stats.currentStreak = 0
         stats.gamesFailed += 1
     } else {
