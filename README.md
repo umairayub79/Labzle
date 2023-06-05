@@ -6,7 +6,7 @@ Labzle is a Balochi version of the popular word game Wordle. It is built using R
 ![Contributors](https://img.shields.io/github/contributors/umairayub79/Labzle?color=dark-green) ![Issues](https://img.shields.io/github/issues/umairayub79/Labzle) ![License](https://img.shields.io/github/license/umairayub79/Labzle) 
 ## Demo
 
-You can try out the Labzle application live at [Labzle Demo](https://labzle.netlify.app.com/).
+You can try out the Labzle application live at [Labzle Demo](https://labzle.netlify.app).
 
 ## Build and Run
 
