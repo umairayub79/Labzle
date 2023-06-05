@@ -18,6 +18,7 @@ import strings from './constants/strings'
 import { words } from './constants/dictionary'
 import ToastContainer from './components/Toast/ToastContainer'
 import { useToast } from './hooks/useToast'
+import { InfoModal } from './components/Modals/InfoModal'
 
 
 function App() {
@@ -233,7 +234,7 @@ function App() {
 
   return (
     <div className='h-[100vh] m-auto flex flex-col justify-between items-center content-center'>
-      <Navbar setIsInfoModalOpen={isInfoModalOpen} setIsSettingsModalOpen={isSettingsModalOpen} setIsStatsModalOpen={isStatsModalOpen} />
+      <Navbar setIsInfoModalOpen={setIsInfoModalOpen} setIsSettingsModalOpen={isSettingsModalOpen} setIsStatsModalOpen={setIsStatsModalOpen} />
 
       <Grid
         guesses={[...guesses]}
@@ -249,7 +250,9 @@ function App() {
         isRevealing={isRevealing}
       />
       <ToastContainer />
-
+      <InfoModal
+        isOpen={isInfoModalOpen}
+        handleClose={() => setIsInfoModalOpen(false)} />
     </div>
   )
 }
