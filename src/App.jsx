@@ -21,6 +21,7 @@ import { useToast } from './hooks/useToast'
 import { InfoModal } from './components/Modals/InfoModal'
 import { StatsModal } from './components/Modals/StatsModal'
 import { loadStats } from './utils/stats'
+import { SettingsModal } from './components/Modals/SettingsModal'
 
 
 function App() {
@@ -86,7 +87,30 @@ function App() {
     }
   }, [isDarkMode])
 
+  useEffect(() => {
+    // if no game state on load,
+    // show the user the how-to info modal
+    if (!loadGameStateFromLocalStorage()) {
+      setTimeout(() => {
+        setIsInfoModalOpen(true)
+      }, WELCOME_INFO_MODAL_MS)
+    }
+  }, [])
 
+  
+  const handleDarkMode = (isDarkMode) => {
+    setIsDarkMode(isDarkMode)
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light')
+  }
+  const handleHardMode = (isHardMode) => {
+    if (guesses.length === 0 || localStorage.getItem('gameMode') === 'hard') {
+      setIsHardMode(isHardMode)
+      localStorage.setItem('gameMode', isHardMode ? 'hard' : 'normal')
+    } else {
+      console.log("error")
+      showToast('error', strings.alertMessages.hardModeAlertMessage)
+    }
+  }
 
   const onChar = (letter) => {
     console.log(letter);
@@ -236,8 +260,11 @@ function App() {
   }
 
   return (
-    <div className='h-[100vh] m-auto flex flex-col justify-between items-center content-center'>
-      <Navbar setIsInfoModalOpen={setIsInfoModalOpen} setIsSettingsModalOpen={isSettingsModalOpen} setIsStatsModalOpen={setIsStatsModalOpen} />
+    <div className='h-[100vh] w-[100vw] overflow-x-hidden overflow-y-auto m-auto flex flex-col justify-between items-center content-center'>
+      <Navbar
+        setIsInfoModalOpen={setIsInfoModalOpen}
+        setIsSettingsModalOpen={setIsSettingsModalOpen}
+        setIsStatsModalOpen={setIsStatsModalOpen} />
 
       <Grid
         guesses={[...guesses]}
@@ -268,6 +295,15 @@ function App() {
         guesses={guesses}
         handleShareToClipboard={() => showToast('success', strings.alertMessages.gameCopiedMessage)}
         handleClose={() => setIsStatsModalOpen(false)} />
+
+      <SettingsModal
+        isOpen={isSettingsModalOpen}
+        handleClose={() => setIsSettingsModalOpen(false)}
+        solutionIndex={solutionIndex}
+        isDarkMode={isDarkMode}
+        handleDarkMode={handleDarkMode}
+        isHardMode={isHardMode}
+        handleHardMode={handleHardMode} />
 
     </div>
   )

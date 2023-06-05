@@ -45,8 +45,8 @@ const strings = {
     bestStreakText: 'جوانیں دور'
   },
   settingsModalTexts: {
-    hardModeDescription: 'Any revealed hints must be used in subsequent guesses',
-    highContrastModeDescription: 'For improved color vision'
+    hardMode: 'گرانیں موڈ',
+    darkMode: 'ڈارک موڈ'
   },
   keys: {
     enterText: 'Enter',
