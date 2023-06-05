@@ -5,6 +5,7 @@ import cx from 'classnames'
 
 export const Keyboard = ({ onChar, onDelete, onEnter, letterStatuses, isRevealing }) => {
 
+    let isENTERorDELETE = false
     const onClick = (value) => {
         if (value === 'ENTER') {
             onEnter()
@@ -41,6 +42,7 @@ export const Keyboard = ({ onChar, onDelete, onEnter, letterStatuses, isRevealin
                         <div className='flex -mx-1 justify-center' key={index}>
                             {row.map((key) => {
                                 let keyStatus = letterStatuses[key];
+                                isENTERorDELETE = key === "ENTER" || key === "DELETE"
                                 return <Key
                                     value={key}
                                     key={key}
@@ -49,7 +51,7 @@ export const Keyboard = ({ onChar, onDelete, onEnter, letterStatuses, isRevealin
                                         'transition ease-in-out': isRevealing,
                                         'bg-red-600 hover:bg-red-700 active:bg-red-800 text-white': key === "DELETE",
                                         'bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white': key === "ENTER",
-                                        'bg-slate-200 dark:bg-slate-600 hover:bg-slate-300 active:bg-slate-400': !keyStatus,
+                                        'bg-slate-200 dark:bg-slate-600 hover:bg-slate-300 active:bg-slate-400': !keyStatus && !isENTERorDELETE,
                                         'bg-slate-400 dark:bg-slate-800 text-white': keyStatus === "wrong",
                                         'bg-green-500 hover:bg-green-600 active:bg-green-700 text-white': keyStatus === "correct",
                                         'bg-yellow-500 hover:bg-yellow-600 active:bg-yellow-700 text-white': keyStatus === "missplaced"

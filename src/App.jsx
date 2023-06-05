@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Navbar } from './components/Navbar/Navbar'
 import { Grid } from './components/Grid/Grid'
 
@@ -11,9 +11,13 @@ import {
   loadGameStateFromLocalStorage,
   saveGameStateToLocalStorage
 } from './utils/localStorage'
-import { MAX_WORD_LENGTH, MAX_CHALLENGES } from './constants/settings'
+import { MAX_WORD_LENGTH, MAX_CHALLENGES, ALERT_TIME_MS, REVEAL_TIME_MS, WELCOME_INFO_MODAL_MS, GAME_LOST_INFO_DELAY } from './constants/settings'
 import GraphemeSplitter from 'grapheme-splitter'
 import { Keyboard } from './components/Keyboard/Keyboard'
+import strings from './constants/strings'
+import { words } from './constants/dictionary'
+import ToastContainer from './components/Toast/ToastContainer'
+import { useToast } from './hooks/useToast'
 
 
 function App() {
@@ -33,6 +37,7 @@ function App() {
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false)
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false)
   const [isStatsModalOpen, setIsStatsModalOpen] = useState(false)
+  const showToast = useToast(ALERT_TIME_MS)
 
 
   const [isGameWon, setIsGameWon] = useState(false)
@@ -41,10 +46,9 @@ function App() {
   const [currentGuess, setCurrentGuess] = useState('')
   const [isRevealing, setIsRevealing] = useState(false)
   const [allowInteraction, setAllowInteraction] = useState(true)
-  const { solution, solutionIndex, tomorrow } = getWordOfDay()
   const [letterStatuses, setLetterStatuses] = useState([])
-
-
+  const [isHardMode, setIsHardMode] = useState(false)
+  const { solution, solutionIndex, tomorrow } = getWordOfDay()
 
 
   const [guesses, setGuesses] = useState(() => {
@@ -103,11 +107,129 @@ function App() {
       return
     }
     if (allowInteraction) {
-      // validate()
+      validate()
     }
   }
 
+  const updateLetterStatuses = (word) => {
+    setLetterStatuses((prev) => {
+      const newLetterStatuses = { ...prev }
+      for (let i = 0; i < MAX_WORD_LENGTH; i++) {
+        if (newLetterStatuses[word.toUpperCase()[i]] === "correct") continue
 
+        if (word[i] === solution[i]) {
+          newLetterStatuses[word.toUpperCase()[i]] = "correct"
+        } else if (solution.includes(word[i])) {
+          newLetterStatuses[word.toUpperCase()[i]] = "missplaced"
+        } else {
+          newLetterStatuses[word.toUpperCase()[i]] = "wrong"
+        }
+      }
+      return newLetterStatuses
+    })
+  }
+
+
+  function clearReveal() {
+    setIsRevealing(false)
+    setAllowInteraction(!isRevealing)
+  }
+  function clearCurrentRowClass() {
+    setCurrentRowClass('')
+  }
+
+  const validate = useCallback(
+    () => {
+      if (currentGuess.length !== MAX_WORD_LENGTH) {
+        setCurrentRowClass("jiggle")
+        setTimeout(() => {
+          clearCurrentRowClass()
+        }, 250);
+        showToast('error', strings.alertMessages.notEnoughLettersMessage)
+        return
+      }
+      if (!words.includes(currentGuess)) {
+        setCurrentRowClass("jiggle")
+        setTimeout(() => {
+          clearCurrentRowClass()
+        }, 250);
+        showToast('error', strings.alertMessages.wordNotFoundMessage)
+        return
+      } else if (currentGuess === solution) {
+        updateLetterStatuses(currentGuess)
+        setStats(addStatsForCompletedGame(stats, guesses.length))
+        setAllowInteraction(false)
+        setIsRevealing(true)
+        setTimeout(() => {
+          clearReveal()
+        }, REVEAL_TIME_MS * MAX_WORD_LENGTH);
+        setGuesses([
+          ...guesses,
+          currentGuess.split("").map((letter) => ({ status: "correct", letter })),
+        ]);
+        setIsGameWon(true)
+        setCurrentGuess("");
+        clearCurrentRowClass()
+      } else {
+        // enforce hard mode - all guesses must contain all previously revealed letters
+        if (isHardMode) {
+          const firstMissingReveal = findFirstUnusedReveal(currentGuess.toString(), guesses)
+          if (firstMissingReveal) {
+            setCurrentRowClass('jiggle')
+            setTimeout(() => {
+              clearCurrentRowClass()
+            }, 250);
+            return showToast('error', firstMissingReveal)
+          }
+        }
+
+        updateLetterStatuses(currentGuess)
+        setAllowInteraction(false)
+        setIsRevealing(true)
+        setTimeout(() => {
+          clearReveal()
+        }, REVEAL_TIME_MS * MAX_WORD_LENGTH);
+        setGuesses([
+          ...guesses,
+          currentGuess.split("").map((letter, index) => {
+            return { status: calculateTileColor(index), letter };
+          }),
+        ]);
+        setCurrentGuess("");
+        clearCurrentRowClass()
+      }
+    },
+    [currentGuess, guesses],
+  )
+
+  const calculateTileColor = (index) => {
+    // correct spot 
+    if (currentGuess[index] === solution[index]) {
+      return "correct"
+    }
+    let wrongWord = 0
+    let wrongGuess = 0
+    for (let i = 0; i < MAX_WORD_LENGTH; i++) {
+      if (solution[i] === currentGuess[index] && currentGuess[i] !== currentGuess[index]) {
+        wrongWord++
+      }
+      if (i <= index) {
+        if (currentGuess[i] === currentGuess[index] && solution[i] !== currentGuess[index]) {
+          wrongGuess++
+        }
+      }
+
+      if (i >= index) {
+        if (wrongGuess === 0) {
+          break;
+        }
+        if (wrongGuess <= wrongWord) {
+          return "missplaced"
+        }
+      }
+    }
+    return "wrong"
+  }
 
   return (
     <div className='h-[100vh] m-auto flex flex-col justify-between items-center content-center'>
@@ -120,12 +242,14 @@ function App() {
         isRevealing={isRevealing} />
 
       <Keyboard
-      onEnter={onEnter}
-      onChar={onChar}
-      onDelete={onDelete}
-      letterStatuses={letterStatuses}
-      isRevealing={isRevealing}
-    />
+        onEnter={onEnter}
+        onChar={onChar}
+        onDelete={onDelete}
+        letterStatuses={letterStatuses}
+        isRevealing={isRevealing}
+      />
+      <ToastContainer />
+
     </div>
   )
 }

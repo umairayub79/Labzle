@@ -10,8 +10,8 @@ export const Cell = ({ letter, status, position, isRevealing, isCompleted }) => 
             'border-gray-500 dark:bg-slate-900 dark:border-slate-200': letter && status === "current",
             'border-gray-300 dark:border-slate-500': !letter,
             'wrong shadowed bg-slate-400 dark:bg-slate-700 text-white border-slate-400 dark:border-slate-700': status === "wrong",
-            'correct shadowed bg-green-500 text-white border-green-500': status === "correct" && !isHighContrastMode,
-            'missplaced shadowed bg-yellow-500 text-white border-yellow-500': status === "missplaced" && !isHighContrastMode,
+            'correct shadowed bg-green-500 text-white border-green-500': status === "correct",
+            'missplaced shadowed bg-yellow-500 text-white border-yellow-500': status === "missplaced",
             'cell-reveal': shouldReveal,
         },
     )
