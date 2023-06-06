@@ -57,6 +57,8 @@ export const InfoModal = ({ isOpen, handleClose }) => {
 
                 <div className='mt-4'>
                     {strings.infoModalTexts.infoMessage1()}
+                    <hr className='my-2' />
+                    <a href="https://github.com/umairayub79/Labzle" target='_blank' className=' text-blue-600'> سورس کوڈ ءَ اِدا بیچار &#8592;</a>
                 </div>
             </div>
         </BaseModal>
