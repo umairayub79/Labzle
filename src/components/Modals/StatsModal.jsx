@@ -8,7 +8,6 @@ import strings from '../../constants/strings'
 import { ShareIcon } from '@heroicons/react/20/solid'
 
 export const StatsModal = ({tomorrow,solutionIndex, isOpen, guesses, isGameWon, isGameLost, isHardMode, stats, handleShareToClipboard, handleClose }) => {
-  isGameLost = true
   if (stats.totalGames <= 0) {
     return (
       <BaseModal title={strings.modalTitles.statisticsTitle} isOpen={isOpen} handleClose={handleClose}>
