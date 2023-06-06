@@ -9,8 +9,9 @@ export const SettingsModal = ({ isOpen, handleClose, solutionIndex, isDarkMode, 
             <div className="flex flex-col mt-2 divide-y">
                 <SettingsToggle settingName={strings.settingsModalTexts.hardMode} flag={isHardMode} handleFlag={handleHardMode} />
                 <SettingsToggle settingName={strings.settingsModalTexts.darkMode} flag={isDarkMode} handleFlag={handleDarkMode} />
-                <div className='mt-4'>
-                    <p className='mt-4 text-gray-400 dark:text-200'>{strings.gameTitle}# {solutionIndex}</p>
+                <div className='w-full mt-4 flex justify-between'>
+                    <p className='mt-4 text-gray-400 dark:text-200'>{strings.gameTitle}</p>
+                    <p className='mt-4 text-gray-400 dark:text-200'>#{solutionIndex}</p>
                 </div>
             </div>
         </BaseModal>
