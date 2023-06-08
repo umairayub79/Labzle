@@ -1,12 +1,12 @@
 import { MAX_CHALLENGES } from "../constants/settings";
 import { saveStatsToLocalStorage, loadGameStatsFromLocalStorage } from "./localStorage";
 
-export const addStatsForCompletedGame = (gameStats, count) => {
+export const addStatsForCompletedGame = (gameStats, count, wasGameWon) => {
     const stats = { ...gameStats }
 
     stats.totalGames += 1
-    console.log(count )
-    if (count + 1 >= MAX_CHALLENGES) {
+    
+    if (count + 1 >= MAX_CHALLENGES && !wasGameWon) {
         // Game Lost
         stats.currentStreak = 0
         stats.gamesFailed += 1

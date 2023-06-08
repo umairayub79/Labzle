@@ -51,7 +51,11 @@ function App() {
   const [isRevealing, setIsRevealing] = useState(false)
   const [allowInteraction, setAllowInteraction] = useState(true)
   const [letterStatuses, setLetterStatuses] = useState([])
-  const [isHardMode, setIsHardMode] = useState(false)
+  const [isHardMode, setIsHardMode] = useState(
+    localStorage.getItem('gameMode')
+      ? localStorage.getItem('gameMode') === 'hard'
+      : false
+  )
   const { solution, solutionIndex, tomorrow } = getWordOfDay()
 
 
@@ -185,6 +189,7 @@ function App() {
 
   const validate = useCallback(
     () => {
+      // Word is too short
       if (currentGuess.length !== MAX_WORD_LENGTH) {
         setCurrentRowClass("jiggle")
         setTimeout(() => {
@@ -193,6 +198,7 @@ function App() {
         showToast('error', strings.alertMessages.notEnoughLettersMessage)
         return
       }
+      // Word not in Dictionary
       if (!words.includes(currentGuess)) {
         setCurrentRowClass("jiggle")
         setTimeout(() => {
@@ -200,52 +206,51 @@ function App() {
         }, 250);
         showToast('error', strings.alertMessages.wordNotFoundMessage)
         return
-      } else if (currentGuess === solution) {
-        updateLetterStatuses(currentGuess)
-        setStats(addStatsForCompletedGame(stats, guesses.length))
-        setAllowInteraction(false)
-        setIsRevealing(true)
-        setTimeout(() => {
-          clearReveal()
-        }, REVEAL_TIME_MS * MAX_WORD_LENGTH);
-        setGuesses([
-          ...guesses,
-          currentGuess.split("").map((letter) => ({ status: "correct", letter })),
-        ]);
-        setIsGameWon(true)
-        setCurrentGuess("");
-        clearCurrentRowClass()
-      } else {
-        // enforce hard mode - all guesses must contain all previously revealed letters
-        if (isHardMode) {
-          const firstMissingReveal = findFirstUnusedReveal(currentGuess.toString(), guesses)
-          if (firstMissingReveal) {
-            setCurrentRowClass('jiggle')
-            setTimeout(() => {
-              clearCurrentRowClass()
-            }, 250);
-            return showToast('error', firstMissingReveal)
-          }
-        }
+      }
 
-        updateLetterStatuses(currentGuess)
-        setAllowInteraction(false)
-        setIsRevealing(true)
-        setTimeout(() => {
-          clearReveal()
-        }, REVEAL_TIME_MS * MAX_WORD_LENGTH);
+      // // enforce hard mode - all guesses must contain all previously revealed letters
+      if (isHardMode) {
+        const firstMissingReveal = findFirstUnusedReveal(currentGuess.toString(), guesses)
+        if (firstMissingReveal) {
+          setCurrentRowClass('jiggle')
+          setTimeout(() => {
+            clearCurrentRowClass()
+          }, 250);
+          return showToast('error', firstMissingReveal)
+        }
+      }
+
+      setAllowInteraction(false)
+      setIsRevealing(true)
+      // turn off after animation finishes
+      setTimeout(() => {
+        clearReveal()
+      }, REVEAL_TIME_MS * MAX_WORD_LENGTH);
+
+      updateLetterStatuses(currentGuess)
+
+      const isWinningWord = currentGuess === solution
+
+      if (currentGuess.length === MAX_WORD_LENGTH && guesses.length < MAX_CHALLENGES && !isGameWon) {
         setGuesses([
           ...guesses,
           currentGuess.split("").map((letter, index) => {
             return { status: calculateTileColor(index), letter };
           }),
         ]);
-        setCurrentGuess("");
-        clearCurrentRowClass()
+        setCurrentGuess('')
 
-        if (guesses.length + 1 === MAX_CHALLENGES && !isGameWon) {
-          setStats(addStatsForCompletedGame(stats, guesses.length))
+        if (isWinningWord) {
+          setStats(addStatsForCompletedGame(stats, guesses.length, true))
+          setAllowInteraction(false)
+          setIsGameWon(true)
+          return
+        }
+
+        if (guesses.length === MAX_CHALLENGES - 1 && !isGameWon) {
+          setStats(addStatsForCompletedGame(stats, guesses.length, false))
           setIsGameLost(true)
+          return
         }
       }
     },
