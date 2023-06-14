@@ -7,7 +7,7 @@ import { EmptyRow } from './EmptyRow'
 export const Grid = ({ guesses, currentGuess, currentRowClass, isRevealing }) => {
     const emptyRows = guesses.length < MAX_CHALLENGES - 1 ? Array.from(Array(MAX_CHALLENGES - 1 - guesses.length)) : []
     return (
-        <div>
+        <div className='w-full flex flex-col justify-center items-center'>
             {guesses.map((guess, index) => (
                 <CompletedRow guess={guess} key={index} isRevealing={isRevealing && guesses.length - 1 === index} />
             ))}

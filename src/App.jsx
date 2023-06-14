@@ -67,12 +67,12 @@ function App() {
     if (loaded.guesses.length === MAX_CHALLENGES && !gameWasWon) {
       setIsGameLost(true)
     }
-    setAllowInteraction(false)
-    setIsRevealing(true)
-    setTimeout(() => {
-      setAllowInteraction(true)
-      clearReveal()
-    }, REVEAL_TIME_MS * MAX_WORD_LENGTH);
+    // setAllowInteraction(false)
+    // setIsRevealing(true)
+    // setTimeout(() => {
+    //   setAllowInteraction(true)
+    //   clearReveal()
+    // }, REVEAL_TIME_MS * MAX_WORD_LENGTH);
     setLetterStatuses(loaded.letterStatuses)
     return loaded.guesses
   })
@@ -99,10 +99,6 @@ function App() {
 
   useEffect(() => {
     saveGameStateToLocalStorage({ guesses, letterStatuses, solution })
-    if (guesses.length === MAX_CHALLENGES && !isGameWon) {
-      setStats(addStatsForCompletedGame(stats, guesses.length))
-      setIsGameLost(true)
-    }
   }, [guesses])
 
   useEffect(() => {
@@ -135,7 +131,6 @@ function App() {
   }
 
   const onChar = (letter) => {
-    console.log(letter);
     if (allowInteraction) {
       if (
         (`${currentGuess}${letter}`).length <= MAX_WORD_LENGTH &&
@@ -207,8 +202,7 @@ function App() {
         return
       } else if (currentGuess === solution) {
         updateLetterStatuses(currentGuess)
-        console.log(guesses.length, guesses.length)
-        setStats(addStatsForCompletedGame(stats, guesses.length + 1))
+        setStats(addStatsForCompletedGame(stats, guesses.length))
         setAllowInteraction(false)
         setIsRevealing(true)
         setTimeout(() => {
@@ -248,6 +242,11 @@ function App() {
         ]);
         setCurrentGuess("");
         clearCurrentRowClass()
+
+        if (guesses.length + 1 === MAX_CHALLENGES && !isGameWon) {
+          setStats(addStatsForCompletedGame(stats, guesses.length))
+          setIsGameLost(true)
+        }
       }
     },
     [currentGuess, guesses],

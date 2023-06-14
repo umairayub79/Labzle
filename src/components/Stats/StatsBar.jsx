@@ -4,7 +4,7 @@ import strings from '../../constants/strings'
 const StatsItem = ({ label, value }) => {
   return (
     <div className="items-center justify-center m-2 w-1/4 text-center dark:text-white">
-      <div className="text-3xl font-bold">{value}</div>
+      <div className="text-3xl font-bold">{label === strings.statsModalTexts.successRateText ? value + "%" : value }</div>
       <div className="text-xs">{label}</div>
     </div>
   )

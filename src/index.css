@@ -6,6 +6,10 @@ html.dark {
   background-color: rgb(15, 23, 42);
 }
 
+*{
+  user-select: none;
+}
+
 :root {
   --animation-speed: 1000ms;
   --animation-speed-fast: 250ms;

@@ -5,7 +5,7 @@ export const Cell = ({ letter, status, position, isRevealing, isCompleted }) => 
     const shouldReveal = isRevealing && isCompleted
     const animationDelay = `${position * 300}ms`
     const classes = cx(
-        'w-14 h-14 border-solid border-2 border-gray-300 flex items-center justify-center mx-0.5  text-2xl font-bold rounded uppercase dark:text-white',
+        'w-11 h-11 border-solid border-2 border-gray-300 flex items-center justify-center mx-0.5  text-2xl font-bold rounded uppercase dark:text-white',
         {
             'border-gray-500 dark:bg-slate-900 dark:border-slate-200': letter && status === "current",
             'border-gray-300 dark:border-slate-500': !letter,
