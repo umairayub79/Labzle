@@ -26,6 +26,7 @@ import { SettingsModal } from './components/Modals/SettingsModal'
 
 function App() {
 
+  
   const prefersDarkMode = window.matchMedia(
     '(prefers-color-scheme: dark)'
   ).matches
